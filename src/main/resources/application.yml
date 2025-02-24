@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/testdb} # URL do banco de dados PostgreSQL
+    username: ${DATABASE_USERNAME:postgres} # Usuário do banco de dados
+    password: ${DATABASE_PASSWORD:admin} # Senha do banco de dados
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update} # Pode ser 'update', 'validate', 'create', etc.
+    show-sql: ${JPA_SHOW_SQL:true} # Exibe as queries no console
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  h2:
+    console:
+      enabled: ${H2_CONSOLE_ENABLED:true} # Habilita o console do H2
+      path: ${H2_CONSOLE_PATH:/h2-console} # Caminho do console do H2
+
+security:
+  jwt:
+    secret: ${JWT_SECRET:my-secret-key} # Chave secreta para assinar os tokens JWT
+    expiration: ${JWT_EXPIRATION:3600000} # Tempo de expiração do token em milissegundos (1 hora)
+
+server:
+  port: ${SERVER_PORT:8080} # Porta do servidor
