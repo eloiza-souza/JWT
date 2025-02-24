@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/testdb} # URL do banco de dados PostgreSQL
-    username: ${DATABASE_USERNAME:postgres} # Usuário do banco de dados
+    username: ${DATABASE_USERNAME:postgres} # Usuï¿½rio do banco de dados
     password: ${DATABASE_PASSWORD:admin} # Senha do banco de dados
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -18,8 +18,8 @@ spring:
 
 security:
   jwt:
-    secret: ${JWT_SECRET:my-secret-key} # Chave secreta para assinar os tokens JWT
-    expiration: ${JWT_EXPIRATION:3600000} # Tempo de expiração do token em milissegundos (1 hora)
+    secret: ${JWT_SECRET:3k9J2+7k5f8h1L9m2Pq7Xy8Z0aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890==} # Chave secreta para assinar os tokens JWT
+    expiration: ${JWT_EXPIRATION:3600000} # Tempo de expiraï¿½ï¿½o do token em milissegundos (1 hora)
 
 server:
   port: ${SERVER_PORT:8080} # Porta do servidor

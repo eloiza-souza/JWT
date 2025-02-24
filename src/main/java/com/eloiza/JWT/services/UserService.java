@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
-@Service
 @AllArgsConstructor
+@Service
 public class UserService {
     @Autowired
     private UserRepository userRepository;

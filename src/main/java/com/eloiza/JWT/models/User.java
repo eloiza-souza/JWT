@@ -33,6 +33,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "department_id", referencedColumnName = "id")
     )
-    Department department;
+    private Department department;
 
 }
