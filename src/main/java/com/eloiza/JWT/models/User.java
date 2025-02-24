@@ -28,11 +28,8 @@ public class User {
     )
     private Set<Role> roles;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_departments",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "department_id", referencedColumnName = "id")
-    )
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id", referencedColumnName = "id")
     private Department department;
 
 }
