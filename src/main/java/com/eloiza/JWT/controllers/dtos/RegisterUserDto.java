@@ -11,6 +11,6 @@ public class RegisterUserDto {
     private String username;
     private String email;
     private String password;
-    private Set<Roles> roles;
-    private Department department;
+    private Set<String> roles;
+    private String department;
 }

@@ -1,25 +1,23 @@
+jwt:
+  secret: 3k9J2+7k5f8h1L9m2Pq7Xy8Z0aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890==
+  expiration: 3600000 # 1 hora em milissegundos
+
 spring:
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/testdb} # URL do banco de dados PostgreSQL
-    username: ${DATABASE_USERNAME:postgres} # Usu�rio do banco de dados
-    password: ${DATABASE_PASSWORD:admin} # Senha do banco de dados
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/testdb}
+    username: ${DATABASE_USERNAME:postgres}
+    password: ${DATABASE_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update} # Pode ser 'update', 'validate', 'create', etc.
-    show-sql: ${JPA_SHOW_SQL:true} # Exibe as queries no console
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: update
+    show-sql: true
+
   h2:
     console:
-      enabled: ${H2_CONSOLE_ENABLED:true} # Habilita o console do H2
+      enabled: true
       path: ${H2_CONSOLE_PATH:/h2-console} # Caminho do console do H2
-
-security:
-  jwt:
-    secret: ${JWT_SECRET:3k9J2+7k5f8h1L9m2Pq7Xy8Z0aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890==} # Chave secreta para assinar os tokens JWT
-    expiration: ${JWT_EXPIRATION:3600000} # Tempo de expira��o do token em milissegundos (1 hora)
 
 server:
   port: ${SERVER_PORT:8080} # Porta do servidor

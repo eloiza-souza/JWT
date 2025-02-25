@@ -2,9 +2,11 @@ package com.eloiza.JWT.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
+@NoArgsConstructor
 @Entity
 @Data
 @Table(name = "users")
@@ -29,7 +31,10 @@ public class User {
     private Set<Role> roles;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "department_id", referencedColumnName = "id")
+    @JoinTable(name = "users_department",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "department_id", referencedColumnName = "id")
+    )
     private Department department;
 
 }

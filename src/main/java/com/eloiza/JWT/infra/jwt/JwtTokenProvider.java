@@ -1,10 +1,9 @@
 package com.eloiza.JWT.infra.jwt;
 
 import com.eloiza.JWT.controllers.dtos.Departments;
-import com.eloiza.JWT.models.User;
-import com.eloiza.JWT.services.CustomUserDetailsService;
+import com.eloiza.JWT.models.CustomUserDetails;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,78 +17,73 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static io.jsonwebtoken.Jwts.builder;
+
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String secretKey = "";
+    @Value("${jwt.secret}") // Alterado para usar uma variável de ambiente
+    private String jwtSecret;
 
-    @Value("${jwt.expiration}")
-    private long jwtExpirationDate;
+    @Value("${jwt.expiration}") // Alterado para usar uma variável de ambiente
+    private long jwtExpiration;
 
     public String generateToken(Authentication authentication) {
-
         String username = authentication.getName();
 
-        // Extrai as roles (authorities) do usuário
         String roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        String department = getDepartmentFromUser(authentication);
-        // Adiciona claims personalizados
+        Departments department = extractDepartment(authentication);
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", roles);
-        claims.put("department", department);
+        claims.put("department", department.name());
 
-        return Jwts.builder()
-                .claims(claims)
-                .subject(username)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + jwtExpirationDate))
-                .signWith(SignatureAlgorithm.HS256, key())
+        return builder()
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .signWith(key())
                 .compact();
     }
 
+    private Departments extractDepartment(Authentication authentication) {
+        if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+            return userDetails.getDepartment();
+        }
+        throw new IllegalArgumentException("Unable to extract department from authentication");
+    }
+
     private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
+    }
+
+    public boolean validateToken(String token, String username) {
+        final String tokenUsername = getUsername(token);
+        return (tokenUsername.equals(username) && !isTokenExpired(token));
     }
 
     public String getUsername(String token) {
-        // Atualizado para usar o método recomendado
-        return Jwts.parser()
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public <T> T extractClaim(String token, java.util.function.Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(key())
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 
-    private String getDepartmentFromUser(Authentication authentication) {
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof User) {
-            // Se você tiver uma classe CustomUserDetails que contém informações do usuário
-            User user = (User) principal;
-            return user.getDepartment().getName();
-        }
-
-        // Caso o departamento não esteja disponível, você pode retornar um valor padrão ou lançar uma exceção
-        return "UNKNOWN";
+    private boolean isTokenExpired(String token) {
+        return extractClaim(token, Claims::getExpiration).before(new Date());
     }
-
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(key())
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (Exception e) {
-            // Log de erro ou tratamento adicional
-            return false;
-        }
-    }
-
-
 }
