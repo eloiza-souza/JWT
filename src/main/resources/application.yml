@@ -1,6 +1,7 @@
 jwt:
   secret: 3k9J2+7k5f8h1L9m2Pq7Xy8Z0aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890==
-  expiration: 3600000 # 1 hora em milissegundos
+  expiration: 300000 # 5 minutos
+  refresh-expiration: 3600000 # 1 hora em milissegundos
 
 spring:
   datasource:

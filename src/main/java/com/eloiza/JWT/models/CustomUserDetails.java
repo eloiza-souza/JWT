@@ -1,36 +1,31 @@
 package com.eloiza.JWT.models;
 
 import com.eloiza.JWT.controllers.dtos.Departments;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
-@Getter
-@AllArgsConstructor
-public class CustomUserDetails implements UserDetails {
-
-    private final String username;
-    private final String password;
-    @Getter
-    private final Departments department;
-    private final Collection<? extends GrantedAuthority> authorities;
+public record CustomUserDetails(User user) implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return user.getUsername();
     }
 
     @Override
@@ -51,5 +46,9 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public Departments getDepartment() {
+        return Departments.valueOf(user.getDepartment().getName());
     }
 }

@@ -3,11 +3,14 @@ package com.eloiza.JWT.infra;
 
 import com.eloiza.JWT.infra.jwt.JwtAuthenticationEntryPoint;
 import com.eloiza.JWT.infra.jwt.JwtAuthenticationFilter;
+import com.eloiza.JWT.services.CustomUserDetailsService;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,7 +27,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private UserDetailsService userDetailsService;
 
     private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
@@ -40,8 +42,11 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> {
-                    authorize.requestMatchers("/api/auth/login").permitAll();
-                    authorize.requestMatchers(HttpMethod.POST, "/user").permitAll();
+                    authorize.requestMatchers("/api/login").permitAll();
+                    authorize.requestMatchers("/api/refreshToken").permitAll();
+                    authorize.requestMatchers(HttpMethod.POST,"/user").permitAll();
+                    authorize.requestMatchers("/admin").hasRole("ADMIN");
+                    authorize.requestMatchers(HttpMethod.GET,"/user").authenticated();
                     authorize.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                     authorize.anyRequest().authenticated();
                 }).httpBasic(Customizer.withDefaults());
