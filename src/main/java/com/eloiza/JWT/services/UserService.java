@@ -76,7 +76,6 @@ public class UserService {
             String username = userDetails.getUsername();
             Departments department = userDetails.getDepartment();
 
-            // Retorna as informações do usuário autenticado
             return new AuthUserDto("Bem-vindo, " + userDetails.user().getName()+ "!", department.name());
         }
 
