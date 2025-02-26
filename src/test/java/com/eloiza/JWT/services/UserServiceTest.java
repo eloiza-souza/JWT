@@ -94,6 +94,64 @@ public class UserServiceTest {
 
     }
 
-   
+    @Test
+    public void getAuthenticatedUser_Success() {
+        User user = new User();
+        user.setName("Test User");
+        user.setUsername("testuser");
+        user.setPassword("password");
+        user.setRoles(Set.of());
+        user.setDepartment(new Department("IT"));
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+
+        SecurityContextHolder.setContext(securityContext);
+
+        AuthUserDto authUserDto = userService.getAuthenticatedUser();
+
+        assertNotNull(authUserDto);
+        assertEquals("Bem-vindo, Test User!", authUserDto.getMessage());
+        assertEquals("IT", authUserDto.getDepartment());
+    }
+
+    @Test
+    public void getAuthenticatedUser_NotAuthenticatedUser() {
+
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(false);
+
+        SecurityContextHolder.setContext(securityContext);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.getAuthenticatedUser());
+        assertEquals("Usuário não autenticado", exception.getMessage());
+
+    }
+
+    @Test
+    public void getAuthenticatedUser_NullAuthentication() {
+        when(securityContext.getAuthentication()).thenReturn(null);
+
+        SecurityContextHolder.setContext(securityContext);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.getAuthenticatedUser());
+        assertEquals("Usuário não autenticado", exception.getMessage());
+    }
+
+    @Test
+    public void getAuthenticatedUser_principalIsNotCustomUserDetails() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        when(authentication.getPrincipal()).thenReturn(null);
+
+        SecurityContextHolder.setContext(securityContext);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userService.getAuthenticatedUser());
+        assertEquals("Não foi possível extrair informações do usuário autenticado", exception.getMessage());
+    }
+
 
 }
