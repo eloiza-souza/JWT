@@ -50,7 +50,22 @@ A API estará disponível em: [http://localhost:8080](http://localhost:8080).
 
 ## Exemplos de entrada e saída
 
-### 1. Login
+## 1. Registro de Usuário
+### Endpoint: `POST /user`
+
+**Requisição**:
+```json
+{
+   "name": "João Silva",
+   "username": "joaosilva",
+   "email": "joao.silva@example.com",
+   "password": "senha123",
+   "roles": ["USER"],
+   "department": "TI"
+}
+```
+
+### 2. Login
 **Endpoint**: `POST /api/login`
 
 **Requisição**:
@@ -69,7 +84,7 @@ A API estará disponível em: [http://localhost:8080](http://localhost:8080).
 }
 ```
 
-### 2. Renovação de Token
+### 3. Renovação de Token
 **Endpoint**: `POST /api/refreshToken`
 
 **Requisição**:
