@@ -60,8 +60,8 @@ A API estará disponível em: [http://localhost:8080](http://localhost:8080).
    "username": "joaosilva",
    "email": "joao.silva@example.com",
    "password": "senha123",
-   "roles": ["USER"],
-   "department": "TI"
+   "roles": ["ROLE_USER"],
+   "department": "IT"
 }
 ```
 
