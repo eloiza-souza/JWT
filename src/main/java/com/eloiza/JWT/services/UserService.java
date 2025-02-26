@@ -60,6 +60,7 @@ public class UserService {
 
         user.setRoles(roles);
         user.setDepartment(department);
+
         userRepository.save(user);
     }
 
@@ -76,7 +77,7 @@ public class UserService {
             Departments department = userDetails.getDepartment();
 
             // Retorna as informações do usuário autenticado
-            return new AuthUserDto("Bem-vindo, " + username + "!", department.name());
+            return new AuthUserDto("Bem-vindo, " + userDetails.user().getName()+ "!", department.name());
         }
 
         throw new IllegalArgumentException("Não foi possível extrair informações do usuário autenticado");
