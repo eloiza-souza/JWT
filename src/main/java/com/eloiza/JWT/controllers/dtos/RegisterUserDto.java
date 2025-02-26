@@ -1,6 +1,6 @@
 package com.eloiza.JWT.controllers.dtos;
 
-import com.eloiza.JWT.models.Department;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Set;
