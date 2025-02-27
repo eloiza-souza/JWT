@@ -2,7 +2,6 @@ package com.eloiza.JWT.services;
 
 import com.eloiza.JWT.controllers.dtos.AuthUserDto;
 import com.eloiza.JWT.controllers.dtos.RegisterUserDto;
-import com.eloiza.JWT.infra.jwt.JwtTokenProvider;
 import com.eloiza.JWT.models.CustomUserDetails;
 import com.eloiza.JWT.models.Department;
 import com.eloiza.JWT.models.Role;
@@ -22,8 +21,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
-import java.util.Set;
 
+import static com.eloiza.JWT.util.TestDataFactory.TEST_USER;
+import static com.eloiza.JWT.util.TestDataFactory.createDefaultRegisterUserDto;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -47,9 +47,6 @@ public class UserServiceTest {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Mock
-    private JwtTokenProvider jwtTokenProvider;
-
-    @Mock
     private SecurityContext securityContext;
 
     @Mock
@@ -62,15 +59,9 @@ public class UserServiceTest {
 
     @Test
     public void registerUser_Success() {
-        RegisterUserDto registerUserDto = new RegisterUserDto();
-        registerUserDto.setName("Test User");
-        registerUserDto.setUsername("testuser");
-        registerUserDto.setEmail("testuser@example.com");
-        registerUserDto.setPassword("password");
-        registerUserDto.setRoles(Set.of("ROLE_USER"));
-        registerUserDto.setDepartment("IT");
+        RegisterUserDto registerUserDto = createDefaultRegisterUserDto();
 
-        when(userRepository.existsByUsername("testuser")).thenReturn(false);
+        when(userRepository.existsByUsername(TEST_USER)).thenReturn(false);
         when(bCryptPasswordEncoder.encode("password")).thenReturn("encodedPassword");
         when(roleRepository.findByName("ROLE_USER")).thenReturn(Optional.empty());
         when(roleRepository.save(any(Role.class))).thenReturn(new Role("ROLE_USER"));
@@ -85,9 +76,9 @@ public class UserServiceTest {
     @Test
     public void registerUser_ExistingUser() {
         RegisterUserDto registerUserDto = new RegisterUserDto();
-        registerUserDto.setUsername("testuser");
+        registerUserDto.setUsername(TEST_USER);
 
-        when(userRepository.existsByUsername("testuser")).thenReturn(true);
+        when(userRepository.existsByUsername(TEST_USER)).thenReturn(true);
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> userService.registerUser(registerUserDto));
         assertEquals("Usuário já cadastrado no sistema", exception.getMessage());
