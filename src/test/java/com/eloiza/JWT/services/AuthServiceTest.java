@@ -4,9 +4,9 @@ import com.eloiza.JWT.controllers.dtos.AuthResponseDto;
 import com.eloiza.JWT.controllers.dtos.LoginDto;
 import com.eloiza.JWT.infra.jwt.JwtTokenProvider;
 import com.eloiza.JWT.models.CustomUserDetails;
-import com.eloiza.JWT.models.Department;
 import com.eloiza.JWT.models.RefreshToken;
 import com.eloiza.JWT.models.User;
+import com.eloiza.JWT.util.TestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,11 +15,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,12 +57,7 @@ public class AuthServiceTest {
         RefreshToken refreshToken = new RefreshToken();
         refreshToken.setToken("refresh-token");
 
-        User user = new User();
-        user.setName("Test User");
-        user.setUsername("testuser");
-        user.setPassword("password");
-        user.setRoles(Set.of());
-        user.setDepartment(new Department("IT"));
+        User user = TestDataFactory.createDefaultUser();
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
         when(authentication.isAuthenticated()).thenReturn(true);
@@ -81,8 +74,20 @@ public class AuthServiceTest {
         assertEquals("refresh-token", response.getToken());
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
         verify(refreshTokenService).createRefreshToken("testuser");
-
-
     }
+    @Test
+    public void login_InvalidAuthentcation() {
+        LoginDto loginDto = new LoginDto();
+        loginDto.setUsername("testuser");
+        loginDto.setPassword("password");
 
+        User user = TestDataFactory.createDefaultUser();
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(authentication.isAuthenticated()).thenReturn(false);
+
+        UsernameNotFoundException exception = assertThrows(UsernameNotFoundException.class, () -> authService.login(loginDto));
+
+        assertEquals("Invalid user request..!!", exception.getMessage());
+    }
 }
