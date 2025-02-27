@@ -2,6 +2,7 @@ package com.eloiza.JWT.services;
 
 import com.eloiza.JWT.controllers.dtos.AuthResponseDto;
 import com.eloiza.JWT.controllers.dtos.LoginDto;
+import com.eloiza.JWT.controllers.dtos.RefreshTokenRequestDto;
 import com.eloiza.JWT.infra.jwt.JwtTokenProvider;
 import com.eloiza.JWT.models.CustomUserDetails;
 import com.eloiza.JWT.models.RefreshToken;
@@ -16,6 +17,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,8 +57,7 @@ public class AuthServiceTest {
         loginDto.setUsername("testuser");
         loginDto.setPassword("password");
 
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setToken("refresh-token");
+        RefreshToken refreshToken = TestDataFactory.createRefreshToken();
 
         User user = TestDataFactory.createDefaultUser();
 
@@ -90,4 +92,31 @@ public class AuthServiceTest {
 
         assertEquals("Invalid user request..!!", exception.getMessage());
     }
+
+    @Test
+    public void refreshAccessToken_Success(){
+        RefreshTokenRequestDto refreshTokenRequestDto = new RefreshTokenRequestDto();
+        refreshTokenRequestDto.setToken("refresh-token");
+
+        User user = TestDataFactory.createDefaultUser();
+        RefreshToken refreshToken = TestDataFactory.createRefreshToken();
+
+        when(refreshTokenService.findByToken("refresh-token")).thenReturn(Optional.of(refreshToken));
+        when(refreshTokenService.verifyExpiration(refreshToken)).thenReturn(refreshToken);
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+        when(customUserDetailsService.loadUserByUsername("testuser")).thenReturn(userDetails);
+        when(jwtTokenProvider.generateAccessToken(any(Authentication.class))).thenReturn("access-token");
+
+        AuthResponseDto response = authService.refreshAccessToken(refreshTokenRequestDto);
+
+        assertNotNull(response);
+        assertEquals("access-token", response.getAccessToken());
+        assertEquals("refresh-token", response.getToken());
+        verify(refreshTokenService).findByToken("refresh-token");
+        verify(refreshTokenService).verifyExpiration(refreshToken);
+
+    }
+
+
 }

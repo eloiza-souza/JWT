@@ -1,6 +1,7 @@
 package com.eloiza.JWT.util;
 
 import com.eloiza.JWT.models.Department;
+import com.eloiza.JWT.models.RefreshToken;
 import com.eloiza.JWT.models.Role;
 import com.eloiza.JWT.models.User;
 
@@ -17,5 +18,12 @@ public class TestDataFactory {
         user.setDepartment(new Department("IT"));
         return user;
     }
+
+    public static RefreshToken createRefreshToken(){
+        RefreshToken refreshToken = new RefreshToken();
+        refreshToken.setToken("refresh-token");
+        return refreshToken;
+    }
+
 
 }
