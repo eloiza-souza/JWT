@@ -10,6 +10,7 @@ import com.eloiza.JWT.models.User;
 import com.eloiza.JWT.repositories.DepartmentRepository;
 import com.eloiza.JWT.repositories.RoleRepository;
 import com.eloiza.JWT.repositories.UserRepository;
+import com.eloiza.JWT.util.TestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -96,12 +97,8 @@ public class UserServiceTest {
 
     @Test
     public void getAuthenticatedUser_Success() {
-        User user = new User();
-        user.setName("Test User");
-        user.setUsername("testuser");
-        user.setPassword("password");
-        user.setRoles(Set.of());
-        user.setDepartment(new Department("IT"));
+
+        User user = TestDataFactory.createDefaultUser();
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
 
